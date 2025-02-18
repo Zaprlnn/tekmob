@@ -1,0 +1,2 @@
+C:/Users/Indra/Music/Youtube/flutter_ui_coffee_shop_2/android/app/.cxx/Debug/36731i3s/x86_64/CMakeFiles/edit_cache.dir
+C:/Users/Indra/Music/Youtube/flutter_ui_coffee_shop_2/android/app/.cxx/Debug/36731i3s/x86_64/CMakeFiles/rebuild_cache.dir
