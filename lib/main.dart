@@ -4,6 +4,7 @@ import 'package:flutter_ui_coffee_shop_2/models/coffee.dart';
 import 'package:flutter_ui_coffee_shop_2/pages/cart_page.dart';
 import 'package:flutter_ui_coffee_shop_2/pages/dashboard_page.dart';
 import 'package:flutter_ui_coffee_shop_2/pages/detail_page.dart';
+import 'package:flutter_ui_coffee_shop_2/pages/onboarding_page.dart'; // ⬅️ Tambah ini
 import 'package:google_fonts/google_fonts.dart';
 
 void main() {
@@ -16,6 +17,7 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         scaffoldBackgroundColor: Colors.white,
         textTheme: GoogleFonts.interTextTheme(),
@@ -25,9 +27,10 @@ class MainApp extends StatelessWidget {
         ),
       ),
       routes: {
-        '/': (context) => DashboardPage(),
+        '/': (context) => const OnBoardingPage(), // ⬅️ Ganti root jadi onboarding
+        '/dashboard': (context) => DashboardPage(),
         '/detail': (context) {
-          final coffee = ModalRoute.settingsOf(context)?.arguments as Coffee?;
+          final coffee = ModalRoute.of(context)?.settings.arguments as Coffee?;
           if (coffee == null) return Scaffold();
           return DetailPage(coffee: coffee);
         },

@@ -25,3 +25,5 @@ flutter:
   assets:
     - assets/icons/
     - assets/images/
+    - assets/images/logo.png
+    - assets/images/coffee.png
