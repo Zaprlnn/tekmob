@@ -163,8 +163,8 @@ class _CartPageState extends State<CartPage> {
                             Text(
                               NumberFormat.currency(
                                 decimalDigits: 2,
-                                locale: 'en_US',
-                                symbol: '\$',
+                                locale: 'id_ID',
+                                symbol: 'Rp',
                               ).format(item.price),
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
@@ -304,9 +304,9 @@ class _CartPageState extends State<CartPage> {
             'Items',
             NumberFormat.currency(
               decimalDigits: 2,
-              symbol: '\$',
-              locale: 'en_US',
-            ).format(89.85),
+              symbol: 'Rp',
+              locale: 'id_ID',
+            ).format(150000),
           ),
           Gap(4),
           Divider(
@@ -319,9 +319,9 @@ class _CartPageState extends State<CartPage> {
             'Discounts',
             NumberFormat.currency(
               decimalDigits: 2,
-              symbol: '\$',
-              locale: 'en_US',
-            ).format(-9.80),
+              symbol: 'Rp',
+              locale: 'id_ID',
+            ).format(-30000),
           ),
           Gap(4),
           Divider(
@@ -342,9 +342,9 @@ class _CartPageState extends State<CartPage> {
             'Total',
             NumberFormat.currency(
               decimalDigits: 2,
-              symbol: '\$',
-              locale: 'en_US',
-            ).format(80.05),
+              symbol: 'Rp',
+              locale: 'id_ID',
+            ).format(120000),
           ),
         ],
       ),

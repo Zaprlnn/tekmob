@@ -54,7 +54,7 @@ class _HomeFragmentState extends State<HomeFragment> {
                 ),
                 Gap(10),
                 Text(
-                  'Leslie Alexander',
+                  'Zaprlnnnn',
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 20,
@@ -282,8 +282,8 @@ class _HomeFragmentState extends State<HomeFragment> {
             Text(
               NumberFormat.currency(
                 decimalDigits: 2,
-                locale: 'en_US',
-                symbol: '\$',
+                locale: 'id_ID',
+                symbol: 'Rp',
               ).format(coffee.price),
               style: TextStyle(
                 fontWeight: FontWeight.w600,
@@ -297,8 +297,8 @@ class _HomeFragmentState extends State<HomeFragment> {
                 Text(
                   NumberFormat.currency(
                     decimalDigits: 2,
-                    locale: 'en_US',
-                    symbol: '\$',
+                    locale: 'id_ID',
+                    symbol: 'Rp',
                   ).format(coffee.newPrice),
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
@@ -318,8 +318,8 @@ class _HomeFragmentState extends State<HomeFragment> {
                 Text(
                   NumberFormat.currency(
                     decimalDigits: 2,
-                    locale: 'en_US',
-                    symbol: '\$',
+                    locale: 'id_ID',
+                    symbol: 'Rp',
                   ).format(coffee.price),
                   style: TextStyle(
                     fontWeight: FontWeight.w400,
@@ -431,8 +431,8 @@ class _HomeFragmentState extends State<HomeFragment> {
                   Text(
                     NumberFormat.currency(
                       decimalDigits: 2,
-                      locale: 'en_US',
-                      symbol: '\$',
+                      locale: 'id_ID',
+                      symbol: 'Rp',
                     ).format(coffee.price),
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
@@ -446,8 +446,8 @@ class _HomeFragmentState extends State<HomeFragment> {
                       Text(
                         NumberFormat.currency(
                           decimalDigits: 2,
-                          locale: 'en_US',
-                          symbol: '\$',
+                          locale: 'id_ID',
+                          symbol: 'Rp',
                         ).format(coffee.newPrice),
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
@@ -467,8 +467,8 @@ class _HomeFragmentState extends State<HomeFragment> {
                       Text(
                         NumberFormat.currency(
                           decimalDigits: 2,
-                          locale: 'en_US',
-                          symbol: '\$',
+                          locale: 'id_ID',
+                          symbol: 'Rp',
                         ).format(coffee.price),
                         style: TextStyle(
                           fontWeight: FontWeight.w400,
