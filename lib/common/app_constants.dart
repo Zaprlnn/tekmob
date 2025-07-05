@@ -1,14 +1,17 @@
-import 'package:flutter/material.dart';
+
 import 'package:flutter_ui_coffee_shop_2/pages/fragments/home_fragment.dart';
+import 'package:flutter_ui_coffee_shop_2/pages/favorites_page.dart';
+import 'package:flutter_ui_coffee_shop_2/pages/notification_page.dart';
+import 'package:flutter_ui_coffee_shop_2/pages/edit_profile_page.dart';
 
 class AppConstants {
   static const categories = [
     'All Coffees',
     'Original',
-    'Decaf Coffee',
-    'Special'
+    'Non-Coffee',
   ];
-  static const menuBottomNav = <Map<String, dynamic>>[
+
+  static final menuBottomNav = <Map<String, dynamic>>[
     {
       'label': 'Home',
       'icon_on': 'assets/icons/home-bold.png',
@@ -19,19 +22,19 @@ class AppConstants {
       'label': 'Favorite',
       'icon_on': 'assets/icons/heart.png',
       'icon_off': 'assets/icons/heart.png',
-      'ui': Center(child: Text('Favorite')),
+      'ui': FavoritesPage(),
     },
     {
       'label': 'Notification',
       'icon_on': 'assets/icons/notification.png',
       'icon_off': 'assets/icons/notification.png',
-      'ui': Center(child: Text('Notification')),
+      'ui': NotificationPage(),
     },
     {
       'label': 'Account',
       'icon_on': 'assets/icons/account.png',
       'icon_off': 'assets/icons/account.png',
-      'ui': Center(child: Text('Account')),
+      'ui': EditProfilePage(),
     },
   ];
 }

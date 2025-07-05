@@ -25,7 +25,7 @@ class Coffee {
 final mainCoffees = [
   Coffee(
     id: 1,
-    image: 'assets/images/1.png',
+    image: 'assets/images/kopi1.png',
     name: 'Arabica Coffe',
     type: 'Light Roast',
     rating: 4.9,
@@ -37,7 +37,7 @@ final mainCoffees = [
   '',
   Coffee(
     id: 2,
-    image: 'assets/images/2.png',
+    image: 'assets/images/kopi2.png',
     name: 'Robusta Coffe',
     type: 'Medium Roast',
     rating: 4.8,
@@ -52,7 +52,7 @@ final mainCoffees = [
 final specialCoffees = [
   Coffee(
     id: 3,
-    image: 'assets/images/3.png',
+    image: 'assets/images/kopi3.png',
     name: 'Cappucino',
     type: 'Dark Roast',
     rating: 4.5,

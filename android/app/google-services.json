@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "369526777989",
+    "project_id": "hagia-coffee",
+    "storage_bucket": "hagia-coffee.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:369526777989:android:c5b72fc9e77c2a613361ec",
+        "android_client_info": {
+          "package_name": "com.company.HagiaCoffee"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDURpwBLNw1fB475bgUus3x-sDFKUXoiyA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

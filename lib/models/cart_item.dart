@@ -20,20 +20,22 @@ class CartItem {
   final bool check;
 }
 
-final myCart = [
+// Dummy data for cart items
+final List<CartItem> myCart = [
   CartItem(
     coffeeId: 1,
     image: 'assets/images/1.png',
-    name: 'Arabica Coffe',
+    name: 'Arabica Coffee',
     type: 'Light',
     size: '250g',
     price: 50000,
     quantity: 3,
+    check: true,
   ),
   CartItem(
     coffeeId: 2,
     image: 'assets/images/2.png',
-    name: 'Robusta Coffe',
+    name: 'Robusta Coffee',
     type: 'Medium',
     size: '100g',
     price: 45000,

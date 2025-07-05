@@ -1,14 +1,33 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  static const primary = Color(0xff00764F);
-  static const darkActive = Color(0xff000D09);
-  static const darkHover = Color(0xff001E14);
-  static const light = Color(0xffE6F1ED);
-  static const accent = Color(0xffFF7A31);
-  static const accentGrey = Color(0xffC4C4C4);
-  static const accentText = Color(0xff999999);
-  static const accentContainer = Color(0xffFAFAFA);
-  static const accentStroke = Color(0xffF2F2F2);
-  static const accentWarning = Color(0xffFF0D0D);
+  // Warna utama aplikasi (hijau tua)
+  static const primary = Color(0xFF00764F);
+
+  // Warna untuk teks gelap aktif (judul atau heading)
+  static const darkActive = Color(0xFF000D09);
+
+  // Warna untuk teks gelap saat hover (misalnya pada tombol)
+  static const darkHover = Color(0xFF001E14);
+
+  // Warna latar belakang terang (misalnya untuk container putih kehijauan)
+  static const light = Color(0xFFE6F1ED);
+
+  // Warna aksen oranye (biasanya untuk tombol utama atau harga)
+  static const accent = Color(0xFFFF7A31);
+
+  // Warna abu-abu terang untuk subtitle atau teks ringan
+  static const accentGrey = Color(0xFFC4C4C4);
+
+  // Warna abu-abu untuk teks penjelas atau placeholder
+  static const accentText = Color(0xFF999999);
+
+  // Warna latar belakang untuk container ringan
+  static const accentContainer = Color(0xFFFAFAFA);
+
+  // Warna garis/border abu-abu muda
+  static const accentStroke = Color(0xFFF2F2F2);
+
+  // Warna peringatan (merah terang)
+  static const accentWarning = Color(0xFFFF0D0D);
 }

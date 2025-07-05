@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ui_coffee_shop_2/common/app_colors.dart';
 import 'package:flutter_ui_coffee_shop_2/models/coffee.dart';
+import 'package:flutter_ui_coffee_shop_2/pages/payment_page.dart';
+import 'package:flutter_ui_coffee_shop_2/providers/cart_provider.dart';
+import 'package:flutter_ui_coffee_shop_2/providers/favorites_provider.dart';
+import 'package:flutter_ui_coffee_shop_2/providers/notification_provider.dart';
 import 'package:gap/gap.dart';
-import 'package:intl/intl.dart';
-import 'package:readmore/readmore.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:intl/intl.dart' show NumberFormat;
+import 'package:provider/provider.dart';
 
 class DetailPage extends StatefulWidget {
   const DetailPage({super.key, required this.coffee});
@@ -15,373 +17,363 @@ class DetailPage extends StatefulWidget {
 }
 
 class _DetailPageState extends State<DetailPage> {
-  final _images = List.generate(3, (index) => 'assets/images/${index + 1}.png');
-  final _pageController = PageController();
   late String _size;
+  late String _levelSugar;
+  late double _currentPrice;
 
-  double _getPrice() {
-    if (widget.coffee.newPrice != null) return widget.coffee.newPrice!;
-    return widget.coffee.price;
-  }
+  final List<String> _sugarLevels = ['No Sugar', 'Low', 'Medium'];
 
   @override
   void initState() {
-    _size = widget.coffee.sizes.first;
     super.initState();
+    _size = widget.coffee.sizes.isNotEmpty ? widget.coffee.sizes.first : 'Small';
+    _levelSugar = 'Low';
+    _updatePrice();
   }
 
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
+  void _updatePrice() {
+    double basePrice = (widget.coffee.newPrice ?? widget.coffee.price).toDouble();
+    if (_size == 'Medium') {
+      _currentPrice = basePrice + 2000;
+    } else if (_size == 'Large') {
+      _currentPrice = basePrice + 4000;
+    } else {
+      _currentPrice = basePrice;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xffF7F7F7),
+      backgroundColor: Colors.white,
       body: Stack(
-        fit: StackFit.expand,
         children: [
-          Positioned(
-            left: 24,
-            right: 24,
-            top: 82,
-            child: Column(
-              children: [
-                _buildAppbar(),
-                _buildImages(),
-              ],
-            ),
-          ),
-          Positioned(
-            top: 450,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: _buildContent(),
-          ),
+          _buildHeaderImage(),
+          _buildTopButtons(),
+          _buildProductDetails(),
         ],
       ),
-      bottomNavigationBar: SafeArea(child: _buildPrice()),
+      bottomNavigationBar: _buildBottomBar(),
     );
   }
 
-  Widget _buildAppbar() {
+  Widget _buildHeaderImage() {
+    return Positioned(
+      top: 0,
+      left: 0,
+      right: 0,
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height * 0.5,
+        child: Image.asset(
+          widget.coffee.image,
+          fit: BoxFit.cover,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTopButtons() {
+    return Consumer<FavoritesProvider>(
+      builder: (context, favoritesProvider, child) {
+        final isFavorite = favoritesProvider.isFavorite(widget.coffee);
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                  onPressed: () => Navigator.pop(context),
+                  icon:
+                      const Icon(Icons.arrow_back, color: Colors.black, size: 28),
+                  style: IconButton.styleFrom(
+                      backgroundColor: Colors.white.withAlpha(179)),
+                ),
+                IconButton(
+                  onPressed: () {
+                    favoritesProvider.toggleFavorite(widget.coffee);
+                    
+                    final wasAdded = favoritesProvider.isFavorite(widget.coffee);
+                    if (wasAdded) {
+                      Provider.of<NotificationProvider>(context, listen: false).addNotification(
+                        title: 'Added to Favorites',
+                        message: '${widget.coffee.name} has been added to your favorites.',
+                        image: widget.coffee.image,
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          backgroundColor: const Color(0xFF00623B),
+                          content: Text('${widget.coffee.name} ditambahkan ke favorit!'),
+                          duration: const Duration(seconds: 2),
+                        ),
+                      );
+                    }
+                  },
+                  icon: Icon(
+                    isFavorite ? Icons.favorite : Icons.favorite_border,
+                    color: isFavorite ? const Color(0xFF00623B) : Colors.black,
+                    size: 28,
+                  ),
+                  style: IconButton.styleFrom(
+                      backgroundColor: Colors.white.withAlpha(179)),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildProductDetails() {
+    return DraggableScrollableSheet(
+      initialChildSize: 0.55,
+      minChildSize: 0.55,
+      maxChildSize: 0.8,
+      builder: (context, scrollController) {
+        return Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(30),
+              topRight: Radius.circular(30),
+            ),
+          ),
+          child: ListView(
+            controller: scrollController,
+            padding: const EdgeInsets.all(24.0),
+            children: [
+              _buildProductTitleAndRating(),
+              const Gap(24),
+              _buildOptionSection(
+                title: 'Cup Size',
+                options: widget.coffee.sizes,
+                selectedValue: _size,
+                onChanged: (value) {
+                  setState(() {
+                    _size = value;
+                    _updatePrice();
+                  });
+                },
+              ),
+              const Gap(24),
+              _buildOptionSection(
+                title: 'Level Sugar',
+                options: _sugarLevels,
+                selectedValue: _levelSugar,
+                onChanged: (value) {
+                  setState(() {
+                    _levelSugar = value;
+                  });
+                },
+              ),
+              const Gap(24),
+              _buildAboutSection(),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildProductTitleAndRating() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        IconButton.filled(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          style: ButtonStyle(
-            backgroundColor: WidgetStatePropertyAll(
-              AppColors.accentStroke,
-            ),
-          ),
-          icon: ImageIcon(
-            AssetImage('assets/icons/arrow-left.png'),
-            size: 24,
-            color: AppColors.darkActive,
-          ),
-        ),
-        Text(
-          'Detail Item',
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 16,
-            color: AppColors.darkActive,
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                widget.coffee.name,
+                style: const TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF1A1A1A),
+                ),
+              ),
+              const Gap(4),
+              Text(
+                widget.coffee.type,
+                style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+              ),
+            ],
           ),
         ),
-        IconButton.filled(
-          onPressed: () {},
-          style: ButtonStyle(
-            backgroundColor: WidgetStatePropertyAll(
-              AppColors.accentStroke,
+        Row(
+          children: [
+            const Icon(Icons.star, color: Colors.amber, size: 24),
+            const Gap(4),
+            Text(
+              '${widget.coffee.rating}',
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-          ),
-          icon: ImageIcon(
-            AssetImage('assets/icons/message-question.png'),
-            size: 24,
-            color: AppColors.darkActive,
-          ),
+          ],
         ),
       ],
     );
   }
 
-  Widget _buildImages() {
-    return SizedBox(
-      height: 350,
-      child: PageView.builder(
-        controller: _pageController,
-        itemCount: _images.length,
-        scrollDirection: Axis.horizontal,
-        physics: const BouncingScrollPhysics(),
-        itemBuilder: (context, index) {
-          final item = _images[index];
-          return Transform.translate(
-            offset: Offset(12, -40),
-            child: Image.asset(
-              item,
-              fit: BoxFit.cover,
-              alignment: Alignment.bottomCenter,
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildContent() {
-    return Container(
-      width: 50,
-      height: 50,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.only(
-          topRight: Radius.circular(32),
-          topLeft: Radius.circular(32),
-        ),
-        color: Colors.white,
-      ),
-      child: ListView(
-        padding: EdgeInsets.only(bottom: 100),
-        children: [
-          Gap(20),
-          Center(
-            child: SmoothPageIndicator(
-              controller: _pageController,
-              count: _images.length,
-              effect: ExpandingDotsEffect(
-                dotHeight: 6,
-                dotWidth: 6,
-                expansionFactor: 3,
-                dotColor: AppColors.primary.withValues(alpha: 0.2),
-                activeDotColor: AppColors.primary,
-              ),
-            ),
-          ),
-          Gap(24),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.coffee.name,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 24,
-                          color: AppColors.darkActive,
-                        ),
-                      ),
-                      Gap(4),
-                      Text(
-                        widget.coffee.type,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w400,
-                          fontSize: 14,
-                          color: AppColors.accentGrey,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: AppColors.accent.withValues(alpha: 0.12),
-                  ),
-                  child: Row(
-                    children: [
-                      ImageIcon(
-                        AssetImage('assets/icons/star-bold.png'),
-                        size: 16,
-                        color: AppColors.accent,
-                      ),
-                      Gap(4),
-                      Text(
-                        '${widget.coffee.rating}',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                          color: AppColors.accent,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Gap(12),
-          Padding(
-            padding: const EdgeInsets.only(left: 24, right: 60),
-            child: ReadMoreText(
-              '${widget.coffee.description} Flutter is Google’s mobile UI open source framework to build high-quality.',
-              trimMode: TrimMode.Length,
-              trimLength: 100,
-              trimCollapsedText: 'Readmore',
-              trimExpandedText: 'Readless',
-              style: TextStyle(
-                fontWeight: FontWeight.w300,
-                fontSize: 12,
-                color: AppColors.accentText,
-              ),
-              moreStyle: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w300,
-                color: AppColors.primary,
-              ),
-              lessStyle: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w300,
-                color: AppColors.primary,
-              ),
-            ),
-          ),
-          Gap(20),
-          _buildPackSize(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPackSize() {
+  Widget _buildAboutSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24),
-          child: Text(
-            'Pack Size',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
-              color: Colors.black87,
-            ),
+        const Text(
+          'About',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
           ),
         ),
-        Gap(12),
-        SizedBox(
-          height: 33,
-          child: ListView.builder(
-            itemCount: widget.coffee.sizes.length,
-            scrollDirection: Axis.horizontal,
-            physics: const BouncingScrollPhysics(),
-            itemBuilder: (context, index) {
-              final item = widget.coffee.sizes[index];
-              final isActive = item == _size;
-              return Padding(
-                padding: EdgeInsets.only(
-                  left: index == 0 ? 24 : 8,
-                  right: index == widget.coffee.sizes.length - 1 ? 24 : 8,
-                ),
-                child: GestureDetector(
-                  onTap: () {
-                    _size = item;
-                    setState(() {});
-                  },
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 12),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(32),
-                      color: isActive ? AppColors.primary : Colors.transparent,
-                      border: isActive
-                          ? null
-                          : Border.all(
-                              color: AppColors.accentStroke,
-                            ),
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      item,
-                      style: TextStyle(
-                        fontWeight:
-                            isActive ? FontWeight.w600 : FontWeight.w400,
-                        fontSize: 14,
-                        color:
-                            isActive ? AppColors.light : AppColors.darkActive,
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
+        const Gap(8),
+        Text(
+          widget.coffee.description,
+          style: TextStyle(fontSize: 14, color: Colors.grey[600], height: 1.5),
         ),
       ],
     );
   }
 
-  Widget _buildPrice() {
-    return ColoredBox(
-      color: Colors.white,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Total Price:',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 14,
-                      color: AppColors.accentGrey,
+  Widget _buildOptionSection({
+    required String title,
+    required List<String> options,
+    required String selectedValue,
+    required ValueChanged<String> onChanged,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const Gap(12),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: options.map((option) {
+            final bool isActive = option == selectedValue;
+            return Expanded(
+              child: GestureDetector(
+                onTap: () => onChanged(option),
+                child: Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 4.0),
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  decoration: BoxDecoration(
+                    color: isActive ? const Color(0xFF00623B) : Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: isActive ? const Color(0xFF00623B) : Colors.grey[300]!,
+                      width: 1.5,
                     ),
                   ),
-                  Gap(4),
-                  Text(
-                    NumberFormat.currency(
-                      decimalDigits: 2,
-                      locale: 'en_US',
-                      symbol: '\$',
-                    ).format(_getPrice()),
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 24,
-                      color: AppColors.darkHover,
+                  child: Center(
+                    child: Text(
+                      option,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: isActive ? Colors.white : Colors.black,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(
-              height: 56,
-              child: FilledButton.icon(
-                onPressed: () {},
-                icon: ImageIcon(
-                  AssetImage('assets/icons/bag-2.png'),
-                  size: 24,
-                  color: Colors.white,
-                ),
-                label: Text(
-                  'Add to Cart',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,
-                    color: AppColors.light,
                   ),
                 ),
               ),
-            )
-          ],
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBottomBar() {
+    // DIUBAH: Mendapatkan kedua provider
+    final cartProvider = Provider.of<CartProvider>(context, listen: false);
+    final notificationProvider = Provider.of<NotificationProvider>(context, listen: false);
+
+    return Container(
+      padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        border: Border(
+          top: BorderSide(color: Color(0xFFF0F0F0), width: 1.5),
+        ),
+      ),
+      child: SafeArea(
+        child: Container(
+          height: 56,
+          decoration: BoxDecoration(
+            color: const Color(0xFF00623B),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Row(
+            children: [
+              GestureDetector(
+                onTap: () {
+                  // Aksi 1: Tambah ke keranjang
+                  cartProvider.addToCart(widget.coffee, _size, _levelSugar);
+                  
+                  // DIUBAH: Aksi 2: Tambahkan notifikasi ke provider
+                  notificationProvider.addNotification(
+                    title: 'Added to Cart',
+                    message: '${widget.coffee.name} ($_size) has been added to your cart.',
+                    image: widget.coffee.image
+                  );
+                  
+                  // Aksi 3: Tampilkan notifikasi snackbar
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      backgroundColor: const Color(0xFF00623B),
+                      content: Text('${widget.coffee.name} ($_size) ditambahkan ke keranjang!'),
+                      duration: const Duration(seconds: 2),
+                    ),
+                  );
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: const Icon(Icons.shopping_cart_outlined,
+                      color: Colors.white, size: 28),
+                ),
+              ),
+              Container(
+                width: 1,
+                height: 30,
+                color: Colors.white.withAlpha(128),
+              ),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PaymentPage(totalPrice: _currentPrice),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    color: Colors.transparent, 
+                    alignment: Alignment.centerLeft,
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Text(
+                      NumberFormat.currency(
+                        locale: 'id_ID',
+                        symbol: 'Rp ',
+                        decimalDigits: 0,
+                      ).format(_currentPrice),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
